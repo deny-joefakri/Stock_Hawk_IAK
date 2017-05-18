@@ -14,18 +14,6 @@ public class ResponseGetStocks {
     @SerializedName("query")
     private Results mResults;
 
-    public List<StockQuote> getStockQuotes() {
-        List<StockQuote> result = new ArrayList<>();
-        List<StockQuote> stockQuotes = mResults.getQuote().getStockQuotes();
-        for (StockQuote stockQuote : stockQuotes) {
-            if (stockQuote.getBid() != null && stockQuote.getChangeInPercent() != null
-                    && stockQuote.getChange() != null) {
-                result.add(stockQuote);
-            }
-        }
-        return result;
-    }
-
     public class Results {
 
         @SerializedName("count")
@@ -47,5 +35,17 @@ public class ResponseGetStocks {
         public List<StockQuote> getStockQuotes() {
             return mStockQuotes;
         }
+    }
+
+    public List<StockQuote> getStockQuotes() {
+        List<StockQuote> result = new ArrayList<>();
+        List<StockQuote> stockQuotes = mResults.getQuote().getStockQuotes();
+        for (StockQuote stockQuote : stockQuotes) {
+            if (stockQuote.getBid() != null && stockQuote.getChangeInPercent() != null
+                    && stockQuote.getChange() != null) {
+                result.add(stockQuote);
+            }
+        }
+        return result;
     }
 }

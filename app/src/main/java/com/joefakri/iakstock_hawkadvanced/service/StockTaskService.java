@@ -13,6 +13,7 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
+import com.google.gson.Gson;
 import com.joefakri.iakstock_hawkadvanced.data.QuoteColumns;
 import com.joefakri.iakstock_hawkadvanced.data.QuoteHistoricalDataColumns;
 import com.joefakri.iakstock_hawkadvanced.data.QuoteProvider;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -48,6 +50,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class StockTaskService extends GcmTaskService {
 
+    private OkHttpClient cl;
     private static String TAG = StockTaskService.class.getSimpleName();
     public final static String TAG_PERIODIC = "periodic";
     private Context mContext;
@@ -65,31 +68,67 @@ public class StockTaskService extends GcmTaskService {
     }
 
     @Override
-    public int onRunTask(TaskParams taskParams) {
-        /*OkHttpClient cl = new OkHttpClient.Builder()
+    public int onRunTask(final TaskParams taskParams) {
+
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        cl = new OkHttpClient.Builder()
                 .readTimeout(5, TimeUnit.MINUTES)
                 .writeTimeout(5, TimeUnit.MINUTES)
+                .addInterceptor(interceptor)
                 .build();
 
-        String fullUrl;
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
-        Request request;
-        Request.Builder requestBuilder = new Request.Builder();
-        RequestBody requestBody;
+        try {
 
-        if (mContext == null) {
+            if (mContext == null) {
+                return GcmNetworkManager.RESULT_FAILURE;
+            }
+
+            String query = "select * from yahoo.finance.quotes where symbol in ("
+                    + buildUrl(taskParams)
+                    + ")";
+
+            cl.newCall(getRequest(query)).enqueue(new Callback() {
+                @Override
+                public void onFailure(okhttp3.Call call, IOException e) {
+                    Log.e("Failure", e.getMessage());
+                }
+
+                @Override
+                public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                    Gson gson = new Gson();
+                    if (taskParams.getTag().equals(StockIntentService.ACTION_INIT)) {
+                        ResponseGetStocks responseGetStock = gson.fromJson(response.body().string(), ResponseGetStocks.class);
+                        try {
+                            saveQuotes2Database(responseGetStock.getStockQuotes());
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        } catch (OperationApplicationException e) {
+                            e.printStackTrace();
+                        }
+
+                    } else {
+                        ResponseGetStock responseGetStock = gson.fromJson(response.body().string(), ResponseGetStock.class);
+                        try {
+                            saveQuotes2Database(responseGetStock.getStockQuotes());
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        } catch (OperationApplicationException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+            return GcmNetworkManager.RESULT_SUCCESS;
+
+        } catch (IOException e){
+            Log.e(TAG, e.getMessage(), e);
             return GcmNetworkManager.RESULT_FAILURE;
         }
 
-        if (serviceRequest.getParameter() != null) {
-            for (String key : serviceRequest.getParameter().keySet()) {
-                urlBuilder.addQueryParameter(key, serviceRequest.getParameter().get(key));
-            }
-        }
-        fullUrl = urlBuilder.build().toString();
-        requestBuilder.url(fullUrl);*/
 
-        try {
+        /*try {
 
             HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
             interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -108,9 +147,7 @@ public class StockTaskService extends GcmTaskService {
             if (taskParams.getTag().equals(StockIntentService.ACTION_INIT)) {
                 Call<ResponseGetStocks> call = service.getStocks(query);
                 Response<ResponseGetStocks> response = call.execute();
-                Log.e("response 1", response.body().toString());
                 ResponseGetStocks responseGetStocks = response.body();
-                Log.e("response 2", responseGetStocks.getStockQuotes().toString());
                 saveQuotes2Database(responseGetStocks.getStockQuotes());
             } else {
                 Call<ResponseGetStock> call = service.getStock(query);
@@ -124,49 +161,25 @@ public class StockTaskService extends GcmTaskService {
         } catch (IOException | RemoteException | OperationApplicationException e) {
             Log.e(TAG, e.getMessage(), e);
             return GcmNetworkManager.RESULT_FAILURE;
-        }
+        }*/
 
     }
 
-    private String fullURL(TaskParams params) throws UnsupportedEncodingException {
-        String dummySymbol = "\"YHOO\",\"AAPL\",\"GOOG\",\"MSFT\"";
-        String url = APIService.BASE_URL + APIService.PARAM_URL ;
-        String query = "select * from yahoo.finance.quotes where symbol in (\"";
-        String end_point = "\")";
-        ContentResolver resolver = mContext.getContentResolver();
+    private Request getRequest(String query) throws UnsupportedEncodingException {
 
-        if (params.getTag().equals(StockIntentService.ACTION_INIT) || params.getTag().equals(TAG_PERIODIC)) {
-            mIsUpdate = true;
-            Cursor cursor = resolver.query(QuoteProvider.Quotes.CONTENT_URI, new String[]{"Distinct " + QuoteColumns.SYMBOL}, null,
-                    null, null);
+        String fullUrl;
+        String url = APIService.BASE_URL + APIService.PARAM_URL;
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
+        Request request;
+        Request.Builder requestBuilder = new Request.Builder();
 
-            if (cursor != null && cursor.getCount() == 0 || cursor == null) {
-                /**
-                 * Data Local Masih kosong*/
-                return url + query + dummySymbol + end_point;
-            } else {
-                /**
-                 * get Symbol berdasarkan data local yang sudah dimodifikasi*/
-                DatabaseUtils.dumpCursor(cursor);
-                cursor.moveToFirst();
-                for (int i = 0; i < cursor.getCount(); i++) {
-                    mStoredSymbols.append("\"");
-                    mStoredSymbols.append(cursor.getString(
-                            cursor.getColumnIndex(QuoteColumns.SYMBOL)));
-                    mStoredSymbols.append("\",");
-                    cursor.moveToNext();
-                }
-                mStoredSymbols.replace(mStoredSymbols.length() - 1, mStoredSymbols.length(), "");
-                return mStoredSymbols.toString();
-            }
-        } else if (params.getTag().equals(StockIntentService.ACTION_ADD)) {
-            mIsUpdate = false;
-            String stockInput = params.getExtras().getString(StockIntentService.EXTRA_SYMBOL);
+        urlBuilder.addQueryParameter("q", query);
+        fullUrl = urlBuilder.build().toString();
+        Log.e("fullUrl", fullUrl);
+        requestBuilder.url(fullUrl);
+        request = requestBuilder.build();
 
-            return url + query + stockInput + end_point;
-        } else {
-            throw new IllegalStateException("Action not specified in TaskParams.");
-        }
+        return request;
     }
 
     private String buildUrl(TaskParams params) throws UnsupportedEncodingException {
@@ -254,8 +267,33 @@ public class StockTaskService extends GcmTaskService {
                 quote.getSymbol() +
                 "\" and startDate=\"" + startDate + "\" and endDate=\"" + endDate + "\"";
 
-        Retrofit retrofit = new Retrofit.Builder()
+        cl.newCall(getRequest(query)).enqueue(new Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, IOException e) {
+                Log.e("Failure", e.getMessage());
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                Log.e("onresponse", "success");
+                Gson gson = new Gson();
+                ResponseGetHistoricalData responseGetHistoricalData = gson.fromJson(response.body().string(), ResponseGetHistoricalData.class);
+                if (responseGetHistoricalData != null) {
+                    try {
+                        saveQuoteHistoricalData2Database(responseGetHistoricalData.getHistoricData());
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    } catch (OperationApplicationException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+
+        /*Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(APIService.BASE_URL)
+                //.client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         APIService service = retrofit.create(APIService.class);
@@ -265,7 +303,7 @@ public class StockTaskService extends GcmTaskService {
         ResponseGetHistoricalData responseGetHistoricalData = response.body();
         if (responseGetHistoricalData != null) {
             saveQuoteHistoricalData2Database(responseGetHistoricalData.getHistoricData());
-        }
+        }*/
     }
 
     private void saveQuoteHistoricalData2Database(List<ResponseGetHistoricalData.Quote> quotes)
