@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/clBaseView">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvStockList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/item_stock" />
+
+    <ProgressBar
+        android:id="@+id/pbStockList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <include layout="@layout/view_no_connection" />
+
+    <include layout="@layout/view_no_stocks" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/margin_16"
+        android:clickable="true"
+        android:contentDescription="@string/textview_add_stock_quote"
+        android:src="@drawable/ic_add_white_24dp"
+        app:backgroundTint="@color/material_blue_500" />
+
+</android.support.design.widget.CoordinatorLayout>

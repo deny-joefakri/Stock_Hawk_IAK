@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">IAK Stock-hawk Advanced</string>
+
+    <string name="input_pre_fill" />
+
+    <string name="btn_disagree">Cancel</string>
+    <string name="btn_add">Add</string>
+    <string name="btn_action_change_units">Change Units</string>
+
+    <string name="msg_hint">FB</string>
+    <string name="msg_no_internet_connection">This app requires an internet connection</string>
+    <string name="msg_try_again">Try again</string>
+    <string name="msg_stock_already_saved">This stock is already saved!</string>
+    <string name="msg_offline">Offline</string>
+
+    <string name="textview_add_symbol">Add a symbol</string>
+    <string name="textview_add_stock_quote">Add a new stock quote</string>
+    <string name="textview_view_no_connection_message">No internet connection found. Check your connection and try again</string>
+    <string name="textview_view_no_stocks_title">No stocks</string>
+    <string name="textview_view_no_stocks_message">Tap + to add a new one</string>
+
+    <string name="stock_detail_title">Stock</string>
+    <string name="stock_detail_tab_header">NASDAQ: %1$s</string>
+    <string name="stock_detail_tab1">5DAYS</string>
+    <string name="stock_detail_tab2">2WEEKS</string>
+    <string name="stock_detail_tab3">1MONTH</string>
+</resources>
