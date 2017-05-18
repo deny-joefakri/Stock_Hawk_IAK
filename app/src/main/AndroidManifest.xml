@@ -34,14 +34,14 @@
                 android:value="com.joefakri.iakstock_hawkadvanced.view.StockListActivity" />
         </activity>
         <service
-            android:name=".service.StockTaskService"
+            android:name=".service.TaskService"
             android:exported="true"
             android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
             <intent-filter>
                 <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
             </intent-filter>
         </service>
-        <service android:name=".service.StockIntentService" />
+        <service android:name=".service.IntentService" />
 
         <provider
             android:name=".data.generated.QuoteProvider"

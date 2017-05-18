@@ -33,8 +33,8 @@ import com.joefakri.iakstock_hawkadvanced.adapter.QuoteCursorAdapter;
 import com.joefakri.iakstock_hawkadvanced.adapter.RecyclerViewItemClickListener;
 import com.joefakri.iakstock_hawkadvanced.data.QuoteColumns;
 import com.joefakri.iakstock_hawkadvanced.data.QuoteProvider;
-import com.joefakri.iakstock_hawkadvanced.service.StockIntentService;
-import com.joefakri.iakstock_hawkadvanced.service.StockTaskService;
+import com.joefakri.iakstock_hawkadvanced.service.IntentService;
+import com.joefakri.iakstock_hawkadvanced.service.TaskService;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -76,8 +76,8 @@ public class StockListActivity extends AppCompatActivity implements LoaderManage
 
 
         if (savedInstanceState == null) {
-            Intent stackServiceIntent = new Intent(this, StockIntentService.class);
-            stackServiceIntent.putExtra(StockIntentService.EXTRA_TAG, StockIntentService.ACTION_INIT);
+            Intent stackServiceIntent = new Intent(this, IntentService.class);
+            stackServiceIntent.putExtra(IntentService.EXTRA_TAG, IntentService.ACTION_INIT);
             if (isNetworkAvailable()) {
                 startService(stackServiceIntent);
             } else {
@@ -105,10 +105,10 @@ public class StockListActivity extends AppCompatActivity implements LoaderManage
         itemTouchHelper.attachToRecyclerView(rvStockList);
 
         PeriodicTask periodicTask = new PeriodicTask.Builder()
-                .setService(StockTaskService.class)
+                .setService(TaskService.class)
                 .setPeriod(/* 1h */ 60 * 60)
                 .setFlex(/* 10s */ 10)
-                .setTag(StockTaskService.TAG_PERIODIC)
+                .setTag(TaskService.TAG_PERIODIC)
                 .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
                 .setRequiresCharging(false)
                 .build();
@@ -260,9 +260,9 @@ public class StockListActivity extends AppCompatActivity implements LoaderManage
                             Snackbar.LENGTH_LONG).show();
                 } else {
                     Intent stockIntentService = new Intent(StockListActivity.this,
-                            StockIntentService.class);
-                    stockIntentService.putExtra(StockIntentService.EXTRA_TAG, StockIntentService.ACTION_ADD);
-                    stockIntentService.putExtra(StockIntentService.EXTRA_SYMBOL, stockQuote);
+                            IntentService.class);
+                    stockIntentService.putExtra(IntentService.EXTRA_TAG, IntentService.ACTION_ADD);
+                    stockIntentService.putExtra(IntentService.EXTRA_SYMBOL, stockQuote);
                     startService(stockIntentService);
                 }
             }

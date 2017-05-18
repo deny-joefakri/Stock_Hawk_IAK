@@ -37,21 +37,15 @@ import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Call;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
 /**
  * Created by deny on bandung.
  */
 
-public class StockTaskService extends GcmTaskService {
+public class TaskService extends GcmTaskService {
 
     private OkHttpClient cl;
-    private static String TAG = StockTaskService.class.getSimpleName();
+    private static String TAG = TaskService.class.getSimpleName();
     public final static String TAG_PERIODIC = "periodic";
     private Context mContext;
     private boolean mIsUpdate;
@@ -59,11 +53,11 @@ public class StockTaskService extends GcmTaskService {
     private final static String dummySymbol = "\"YHOO\",\"AAPL\",\"GOOG\",\"MSFT\"";
     private StringBuilder mStoredSymbols = new StringBuilder();
 
-    public StockTaskService(Context context) {
+    public TaskService(Context context) {
         mContext = context;
     }
 
-    public StockTaskService() {
+    public TaskService() {
 
     }
 
@@ -98,7 +92,7 @@ public class StockTaskService extends GcmTaskService {
                 @Override
                 public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
                     Gson gson = new Gson();
-                    if (taskParams.getTag().equals(StockIntentService.ACTION_INIT)) {
+                    if (taskParams.getTag().equals(IntentService.ACTION_INIT)) {
                         ResponseGetStocks responseGetStock = gson.fromJson(response.body().string(), ResponseGetStocks.class);
                         try {
                             saveQuotes2Database(responseGetStock.getStockQuotes());
@@ -127,42 +121,6 @@ public class StockTaskService extends GcmTaskService {
             return GcmNetworkManager.RESULT_FAILURE;
         }
 
-
-        /*try {
-
-            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
-
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(APIService.BASE_URL)
-                    .client(client)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-            APIService service = retrofit.create(APIService.class);
-            String query = "select * from yahoo.finance.quotes where symbol in ("
-                    + buildUrl(taskParams)
-                    + ")";
-
-            if (taskParams.getTag().equals(StockIntentService.ACTION_INIT)) {
-                Call<ResponseGetStocks> call = service.getStocks(query);
-                Response<ResponseGetStocks> response = call.execute();
-                ResponseGetStocks responseGetStocks = response.body();
-                saveQuotes2Database(responseGetStocks.getStockQuotes());
-            } else {
-                Call<ResponseGetStock> call = service.getStock(query);
-                Response<ResponseGetStock> response = call.execute();
-                ResponseGetStock responseGetStock = response.body();
-                saveQuotes2Database(responseGetStock.getStockQuotes());
-            }
-
-            return GcmNetworkManager.RESULT_SUCCESS;
-
-        } catch (IOException | RemoteException | OperationApplicationException e) {
-            Log.e(TAG, e.getMessage(), e);
-            return GcmNetworkManager.RESULT_FAILURE;
-        }*/
-
     }
 
     private Request getRequest(String query) throws UnsupportedEncodingException {
@@ -184,7 +142,7 @@ public class StockTaskService extends GcmTaskService {
 
     private String buildUrl(TaskParams params) throws UnsupportedEncodingException {
         ContentResolver resolver = mContext.getContentResolver();
-        if (params.getTag().equals(StockIntentService.ACTION_INIT) || params.getTag().equals(TAG_PERIODIC)) {
+        if (params.getTag().equals(IntentService.ACTION_INIT) || params.getTag().equals(TAG_PERIODIC)) {
             mIsUpdate = true;
             Cursor cursor = resolver.query(QuoteProvider.Quotes.CONTENT_URI,
                     new String[]{"Distinct " + QuoteColumns.SYMBOL}, null,
@@ -206,9 +164,9 @@ public class StockTaskService extends GcmTaskService {
                 Log.e("mStoredSymbols", mStoredSymbols.toString());
                 return mStoredSymbols.toString();
             }
-        } else if (params.getTag().equals(StockIntentService.ACTION_ADD)) {
+        } else if (params.getTag().equals(IntentService.ACTION_ADD)) {
             mIsUpdate = false;
-            String stockInput = params.getExtras().getString(StockIntentService.EXTRA_SYMBOL);
+            String stockInput = params.getExtras().getString(IntentService.EXTRA_SYMBOL);
 
             return "\"" + stockInput + "\"";
         } else {
@@ -290,20 +248,6 @@ public class StockTaskService extends GcmTaskService {
             }
         });
 
-
-        /*Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(APIService.BASE_URL)
-                //.client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        APIService service = retrofit.create(APIService.class);
-        Call<ResponseGetHistoricalData> call = service.getStockHistoricalData(query);
-        Response<ResponseGetHistoricalData> response;
-        response = call.execute();
-        ResponseGetHistoricalData responseGetHistoricalData = response.body();
-        if (responseGetHistoricalData != null) {
-            saveQuoteHistoricalData2Database(responseGetHistoricalData.getHistoricData());
-        }*/
     }
 
     private void saveQuoteHistoricalData2Database(List<ResponseGetHistoricalData.Quote> quotes)
