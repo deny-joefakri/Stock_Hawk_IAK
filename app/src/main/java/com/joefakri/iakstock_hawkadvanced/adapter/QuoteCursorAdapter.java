@@ -19,6 +19,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,11 +40,10 @@ import butterknife.ButterKnife;
  * Created by deny on bandung.
  */
 
-public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAdapter.ViewHolder>
-        implements ItemTouchHelperCallback.SwipeListener {
+public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAdapter.ViewHolder> {
 
     private static Context mContext;
-    private int mChangeUnits;
+    private static int mChangeUnits;
 
     public QuoteCursorAdapter(Context context, Cursor cursor, int changeUnits) {
         super(cursor);
@@ -60,38 +60,25 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor) {
-        viewHolder.mSymbol.setText(cursor.getString(cursor.getColumnIndex(QuoteColumns.SYMBOL)));
-        viewHolder.mBidPrice.setText(cursor.getString(cursor.getColumnIndex(QuoteColumns.BIDPRICE)));
-        if (cursor.getInt(cursor.getColumnIndex(QuoteColumns.ISUP)) == 1) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                viewHolder.mChange.setBackground(
-                        mContext.getResources().getDrawable(R.drawable.bg_pill_green,
-                                mContext.getTheme()));
-            }
-            viewHolder.imgType.setImageResource(R.drawable.ic_trending_up);
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                viewHolder.mChange.setBackground(
-                        mContext.getResources().getDrawable(R.drawable.bg_pill_red,
-                                mContext.getTheme()));
-            }
-            viewHolder.imgType.setImageResource(R.drawable.ic_trending_down);
-        }
-        if (mChangeUnits == StockListActivity.CHANGE_UNITS_PERCENTAGES) {
-            viewHolder.mChange.setText(cursor.getString(cursor.getColumnIndex(QuoteColumns.PERCENT_CHANGE)));
-        } else {
-            viewHolder.mChange.setText(cursor.getString(cursor.getColumnIndex(QuoteColumns.CHANGE)));
-        }
+        ((ViewHolder) viewHolder).setView(cursor);
     }
 
-    @Override
-    public void onItemDismiss(int position) {
+    public void longClick(int position){
         String symbol = getSymbol(position);
         mContext.getContentResolver().delete(QuoteProvider.Quotes.withSymbol(symbol), null, null);
         mContext.getContentResolver().delete(QuoteProvider.QuotesHistoricData.CONTENT_URI,
                 QuoteHistoricalDataColumns.SYMBOL + " = \"" + symbol + "\"", null);
         notifyItemRemoved(position);
     }
+
+    /*@Override
+    public void onItemDismiss(int position) {
+        String symbol = getSymbol(position);
+        mContext.getContentResolver().delete(QuoteProvider.Quotes.withSymbol(symbol), null, null);
+        mContext.getContentResolver().delete(QuoteProvider.QuotesHistoricData.CONTENT_URI,
+                QuoteHistoricalDataColumns.SYMBOL + " = \"" + symbol + "\"", null);
+        notifyItemRemoved(position);
+    }*/
 
     @Override
     public int getItemCount() {
@@ -104,30 +91,42 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
         return c.getString(c.getColumnIndex(QuoteColumns.SYMBOL));
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder
-            implements ItemTouchHelperCallback.ItemTouchHelperViewHolder, View.OnClickListener {
-        @BindView(R.id.img_type) public ImageView imgType;
-        @BindView(R.id.stock_symbol) public TextView mSymbol;
-        @BindView(R.id.bid_price) public TextView mBidPrice;
-        @BindView(R.id.stock_change) public TextView mChange;
+    public static class ViewHolder extends RecyclerView.ViewHolder{
+        @BindView(R.id.img_type) ImageView imgType;
+        @BindView(R.id.stock_symbol) TextView mSymbol;
+        @BindView(R.id.bid_price) TextView mBidPrice;
+        @BindView(R.id.stock_change) TextView mChange;
 
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        @Override
-        public void onItemSelected() {
+        private void setView(Cursor cursor){
+            mSymbol.setText(cursor.getString(cursor.getColumnIndex(QuoteColumns.SYMBOL)));
+            mBidPrice.setText(cursor.getString(cursor.getColumnIndex(QuoteColumns.BIDPRICE)));
+            if (cursor.getInt(cursor.getColumnIndex(QuoteColumns.ISUP)) == 1) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    mChange.setBackground(
+                            mContext.getResources().getDrawable(R.drawable.bg_pill_green,
+                                    mContext.getTheme()));
+                }
+                imgType.setImageResource(R.drawable.ic_trending_up);
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    mChange.setBackground(
+                            mContext.getResources().getDrawable(R.drawable.bg_pill_red,
+                                    mContext.getTheme()));
+                }
+                imgType.setImageResource(R.drawable.ic_trending_down);
+            }
+            if (mChangeUnits == StockListActivity.CHANGE_UNITS_PERCENTAGES) {
+                mChange.setText(cursor.getString(cursor.getColumnIndex(QuoteColumns.PERCENT_CHANGE)));
+            } else {
+                mChange.setText(cursor.getString(cursor.getColumnIndex(QuoteColumns.CHANGE)));
+            }
         }
 
-        @Override
-        public void onItemClear() {
-        }
-
-        @Override
-        public void onClick(View v) {
-
-        }
     }
 
     public void setChangeUnits(int changeUnits) {

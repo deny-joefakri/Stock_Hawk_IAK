@@ -11,4 +11,5 @@
     <color name="empty_view_text_color">#BDBDBD</color>
     <color name="empty_view_text_color_2">#7c7c7c</color>
     <color name="primary_text">#363636</color>
+    <color name="primary_light">#B3E5FC</color>
 </resources>

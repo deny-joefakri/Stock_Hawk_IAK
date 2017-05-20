@@ -30,12 +30,12 @@ public class StockWidgetProvider extends AppWidgetProvider {
         setList(rv, context, appWidgetId);
         appWidgetManager.updateAppWidget(appWidgetId, rv);
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId,
-                R.id.stock_list);
+                R.id.widget_list);
     }
 
     void setList(RemoteViews rv, Context context, int appWidgetId) {
         Intent adapter = new Intent(context, StockWidgetService.class);
         adapter.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        rv.setRemoteAdapter(R.id.stock_list, adapter);
+        rv.setRemoteAdapter(R.id.widget_list, adapter);
     }
 }

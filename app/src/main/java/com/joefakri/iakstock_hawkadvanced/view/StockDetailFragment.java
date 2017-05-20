@@ -221,34 +221,4 @@ public class StockDetailFragment extends Fragment implements LoaderManager.Loade
 
     }
 
-    /*private void setupTabs() {
-        mTabHost.setup();
-
-        TabHost.TabSpec tabSpec;
-        tabSpec = mTabHost.newTabSpec(getString(R.string.stock_detail_tab1));
-        tabSpec.setIndicator(getString(R.string.stock_detail_tab1));
-        tabSpec.setContent(android.R.id.tabcontent);
-        mTabHost.addTab(tabSpec);
-
-        tabSpec = mTabHost.newTabSpec(getString(R.string.stock_detail_tab2));
-        tabSpec.setIndicator(getString(R.string.stock_detail_tab2));
-        tabSpec.setContent(android.R.id.tabcontent);
-        mTabHost.addTab(tabSpec);
-
-        tabSpec = mTabHost.newTabSpec(getString(R.string.stock_detail_tab3));
-        tabSpec.setIndicator(getString(R.string.stock_detail_tab3));
-        tabSpec.setContent(android.R.id.tabcontent);
-        mTabHost.addTab(tabSpec);
-
-        mTabHost.setOnTabChangedListener(this);
-
-        if (mSelectedTab.equals(getString(R.string.stock_detail_tab2))) {
-            mTabHost.setCurrentTab(1);
-        } else if (mSelectedTab.equals(getString(R.string.stock_detail_tab3))) {
-            mTabHost.setCurrentTab(2);
-        } else {
-            mTabHost.setCurrentTab(0);
-        }
-    }*/
-
 }

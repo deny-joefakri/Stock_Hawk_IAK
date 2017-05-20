@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">IAK Stock-hawk Advanced</string>
+
+    <string name="input_pre_fill" />
+    <string name="action_setting">إعدادات</string>
+    <string name="action_language">لغة</string>
+
+    <string name="btn_disagree">إلغاء</string>
+    <string name="btn_add">إضافة</string>
+    <string name="btn_action_change_units">تغيير الوحدات</string>
+
+    <string name="msg_hint">FB</string>
+    <string name="msg_no_internet_connection">هذا التطبيق يتطلب اتصال بالإنترنت</string>
+    <string name="msg_no_stock">لا يوجد مخزون</string>
+    <string name="msg_try_again">حاول ثانية</string>
+    <string name="msg_stock_already_saved">لا يوجد مخزون متاح</string>
+    <string name="msg_offline">غير متصل على الانترنت</string>
+
+    <string name="textview_language">لغة</string>
+    <string name="textview_add_symbol">إضافة رمز</string>
+    <string name="textview_add_stock_quote">أضف عرض أسعار أسهم جديد</string>
+    <string name="textview_view_no_connection_message">لم يتم العثور على اتصال بالإنترنت. تحقق من الاتصال وحاول مرة أخرى</string>
+    <string name="textview_view_no_stocks_title">لا توجد أسهم</string>
+    <string name="textview_view_no_stocks_message">انقر على + لإضافة حساب جديد</string>
+
+    <string name="stock_detail_title">مخزون</string>
+    <string name="stock_detail_tab_header">نسداق:٪ 1 $ s</string>
+    <string name="stock_detail_tab1">5 ايام</string>
+    <string name="stock_detail_tab2">2 أسابيع</string>
+    <string name="stock_detail_tab3">1 شهر</string>
+
+    <string name="lang_eng">الإنجليزية</string>
+    <string name="lang_egypt">مصر</string>
+
+
+</resources>

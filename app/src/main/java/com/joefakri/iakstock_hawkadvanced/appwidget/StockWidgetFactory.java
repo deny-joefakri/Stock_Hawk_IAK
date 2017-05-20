@@ -4,6 +4,8 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -52,12 +54,21 @@ public class StockWidgetFactory implements RemoteViewsService.RemoteViewsFactory
     public RemoteViews getViewAt(int position) {
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.view_widget_item_stock);
         if (mCursor.moveToPosition(position)) {
-            rv.setTextViewText(R.id.stock_symbol,
-                    mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL)));
-            rv.setTextViewText(R.id.bid_price,
-                    mCursor.getString(mCursor.getColumnIndex(QuoteColumns.BIDPRICE)));
-            rv.setTextViewText(R.id.stock_change,
-                    mCursor.getString(mCursor.getColumnIndex(QuoteColumns.CHANGE)));
+            Log.e("test", mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL)));
+            rv.setTextViewText(R.id.stock_symbol, mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL)));
+            rv.setTextViewText(R.id.bid_price, mCursor.getString(mCursor.getColumnIndex(QuoteColumns.BIDPRICE)));
+            rv.setTextViewText(R.id.stock_change, mCursor.getString(mCursor.getColumnIndex(QuoteColumns.CHANGE)));
+            if (mCursor.getInt(mCursor.getColumnIndex(QuoteColumns.ISUP)) == 1) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    rv.setInt(R.id.stock_change, "setBackgroundResource", R.drawable.bg_pill_green);
+                }
+               rv.setImageViewResource(R.id.img_type, R.drawable.ic_trending_up);
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    rv.setInt(R.id.stock_change, "setBackgroundResource", R.drawable.bg_pill_red);
+                }
+                rv.setImageViewResource(R.id.img_type, R.drawable.ic_trending_down);
+            }
         }
         return rv;
     }
