@@ -19,7 +19,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,12 +39,12 @@ import butterknife.ButterKnife;
  * Created by deny on bandung.
  */
 
-public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAdapter.ViewHolder> {
+public class QuoteAdapter extends CursorRecyclerViewAdapter<QuoteAdapter.ViewHolder> {
 
     private static Context mContext;
     private static int mChangeUnits;
 
-    public QuoteCursorAdapter(Context context, Cursor cursor, int changeUnits) {
+    public QuoteAdapter(Context context, Cursor cursor, int changeUnits) {
         super(cursor);
         mContext = context;
         mChangeUnits = changeUnits;

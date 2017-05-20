@@ -22,8 +22,6 @@ import com.joefakri.iakstock_hawkadvanced.network.ResponseGetHistoricalData;
 import com.joefakri.iakstock_hawkadvanced.network.ResponseGetStock;
 import com.joefakri.iakstock_hawkadvanced.network.ResponseGetStocks;
 import com.joefakri.iakstock_hawkadvanced.network.StockQuote;
-import com.joefakri.iakstock_hawkadvanced.realm.QuoteTable;
-import com.joefakri.iakstock_hawkadvanced.realm.RealmController;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -35,8 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import io.realm.Realm;
-import io.realm.RealmResults;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -60,7 +56,6 @@ public class TaskService extends GcmTaskService {
     public TaskService(Context context) {
         mContext = context;
     }
-    Realm realm;
 
     public TaskService() {
 
@@ -179,29 +174,6 @@ public class TaskService extends GcmTaskService {
             throw new IllegalStateException("Action not specified in TaskParams.");
         }
 
-        /*if (params.getTag().equals(IntentService.ACTION_INIT) || params.getTag().equals(TAG_PERIODIC)) {
-            mIsUpdate = true;
-            RealmResults<QuoteTable> tables = RealmController.with(mContext).getQuoteTables();
-            if (tables != null && tables.size() == 0 || tables == null){
-                return dummySymbol;
-            } else {
-                for (int i = 0; i < tables.size(); i++) {
-                    mStoredSymbols.append("\"");
-                    mStoredSymbols.append(tables.get(i).getSymbol());
-                    mStoredSymbols.append("\",");
-                }
-                mStoredSymbols.replace(mStoredSymbols.length() - 1, mStoredSymbols.length(), "");
-                Log.e("mStoredSymbols", mStoredSymbols.toString());
-                return mStoredSymbols.toString();
-            }
-        } else if (params.getTag().equals(IntentService.ACTION_ADD)) {
-            mIsUpdate = false;
-            String stockInput = params.getExtras().getString(IntentService.EXTRA_SYMBOL);
-
-            return "\"" + stockInput + "\"";
-        } else {
-            throw new IllegalStateException("Action not specified in TaskParams.");
-        }*/
     }
 
     private void saveQuotes2Database(List<StockQuote> quotes) throws RemoteException, OperationApplicationException {
@@ -224,18 +196,6 @@ public class TaskService extends GcmTaskService {
 
         resolver.applyBatch(QuoteProvider.AUTHORITY, batchOperations);
 
-        /*for (StockQuote quote : quotes) {
-            RealmController.with(mContext).insertQuote(quote, mIsUpdate);
-        }
-
-        for (StockQuote quote : quotes) {
-            // Load historical data for the quote
-            try {
-                loadHistoricalData(quote);
-            } catch (IOException | RemoteException | OperationApplicationException e) {
-                Log.e(TAG, e.getMessage(), e);
-            }
-        }*/
     }
 
 
@@ -301,10 +261,5 @@ public class TaskService extends GcmTaskService {
 
         resolver.applyBatch(QuoteProvider.AUTHORITY, batchOperations);
 
-        /*for (ResponseGetHistoricalData.Quote quote : quotes) {
-
-            RealmController.with(mContext).deleteHistory(QuoteHistoricalDataColumns.SYMBOL + " = \"" + quote.getSymbol() + "\"");
-            RealmController.with(mContext).insertHistory(quote);
-        }*/
     }
 }

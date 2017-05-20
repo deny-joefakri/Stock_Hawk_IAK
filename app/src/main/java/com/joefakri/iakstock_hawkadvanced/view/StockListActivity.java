@@ -27,24 +27,16 @@ import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.joefakri.iakstock_hawkadvanced.R;
-import com.joefakri.iakstock_hawkadvanced.adapter.QuoteCursorAdapter;
+import com.joefakri.iakstock_hawkadvanced.adapter.QuoteAdapter;
 import com.joefakri.iakstock_hawkadvanced.adapter.RecyclerViewItemClickListener;
-import com.joefakri.iakstock_hawkadvanced.adapter.StockAdapter;
 import com.joefakri.iakstock_hawkadvanced.data.QuoteColumns;
 import com.joefakri.iakstock_hawkadvanced.data.QuoteProvider;
-import com.joefakri.iakstock_hawkadvanced.realm.QuoteModel;
-import com.joefakri.iakstock_hawkadvanced.realm.QuoteTable;
-import com.joefakri.iakstock_hawkadvanced.realm.RealmController;
 import com.joefakri.iakstock_hawkadvanced.service.IntentService;
 import com.joefakri.iakstock_hawkadvanced.service.TaskService;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 public class StockListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
         RecyclerViewItemClickListener.OnItemClickListener{
@@ -56,8 +48,7 @@ public class StockListActivity extends AppCompatActivity implements LoaderManage
     @BindView(R.id.view_no_stocks) View view_no_stocks;
 
     private MaterialDialog mDialog;
-    private QuoteCursorAdapter mAdapter;
-    private StockAdapter adapter;
+    private QuoteAdapter mAdapter;
     private boolean mTwoPane;
 
     public static final int CHANGE_UNITS_DOLLARS = 0;
@@ -67,15 +58,12 @@ public class StockListActivity extends AppCompatActivity implements LoaderManage
     private final String EXTRA_ADD_DIALOG_OPENED = "EXTRA_ADD_DIALOG_OPENED";
     private int mChangeUnits = CHANGE_UNITS_DOLLARS;
 
-    Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stock_list);
         ButterKnife.bind(this);
-
-        realm = RealmController.with(this).getRealm();
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(true);
@@ -105,13 +93,9 @@ public class StockListActivity extends AppCompatActivity implements LoaderManage
 
         rvStockList.setLayoutManager(new LinearLayoutManager(this));
         rvStockList.addOnItemTouchListener(new RecyclerViewItemClickListener(this, rvStockList, this));
-        /*rvStockList.addOnItemTouchListener(adapter = new StockAdapter(this, rvStockList));
-        adapter.setOnclickListener(this);*/
 
-        //adapter = new StockAdapter(this, rvStockList);
-        mAdapter = new QuoteCursorAdapter(this, null, mChangeUnits);
+        mAdapter = new QuoteAdapter(this, null, mChangeUnits);
         rvStockList.setAdapter(mAdapter);
-        //rvStockList.setAdapter(adapter);
 
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
@@ -167,8 +151,6 @@ public class StockListActivity extends AppCompatActivity implements LoaderManage
             }
             mAdapter.setChangeUnits(mChangeUnits);
             mAdapter.notifyDataSetChanged();
-            /*adapter.setChangeUnits(mChangeUnits);
-            adapter.notifyDataSetChanged();*/
         } else {
             startActivity(new Intent(StockListActivity.this, LanguageActivity.class));
         }
@@ -187,66 +169,6 @@ public class StockListActivity extends AppCompatActivity implements LoaderManage
                 new String[]{"1"},
                 null);
     }
-
-    /*@Override
-    public Loader<Realm> onCreateLoader(int id, Bundle args) {
-        view_no_connection.setVisibility(View.GONE);
-        view_no_stocks.setVisibility(View.GONE);
-        pbStockList.setVisibility(View.VISIBLE);
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Realm> loader, Realm data) {
-        pbStockList.setVisibility(View.GONE);
-
-        RealmResults<QuoteTable> tables = RealmController.with(this).getQuoteTables();
-        ArrayList<QuoteModel> quoteModels = new ArrayList<>();
-        for (int i = 0; i < tables.size(); i++) {
-            QuoteModel quoteModel = new QuoteModel();
-            quoteModel.set_id(tables.get(i).get_id());
-            quoteModel.setSymbol(tables.get(i).getSymbol());
-            quoteModel.setBid_price(tables.get(i).getBid_price());
-            quoteModel.setIs_current(tables.get(i).getIs_current());
-            quoteModel.setChange(tables.get(i).getChange());
-            quoteModel.setIs_up(tables.get(i).getIs_up());
-            quoteModel.setCreated(tables.get(i).getCreated());
-            quoteModel.setName(tables.get(i).getName());
-            quoteModel.setPercent_change(tables.get(i).getPercent_change());
-            quoteModels.add(quoteModel);
-        }
-
-        adapter.update(quoteModels);
-
-        if (adapter.getItemCount() == 0) {
-            if (!isNetworkAvailable()) {
-                view_no_connection.setVisibility(View.VISIBLE);
-            } else {
-                view_no_stocks.setVisibility(View.VISIBLE);
-            }
-        }
-        else
-        {
-            view_no_connection.setVisibility(View.GONE);
-            view_no_stocks.setVisibility(View.GONE);
-        }
-
-        if (!isNetworkAvailable()) {
-            Snackbar.make(clBaseView, getString(R.string.msg_offline),
-                    Snackbar.LENGTH_INDEFINITE).setAction(R.string.msg_try_again, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, StockListActivity.this);
-                }
-            }).show();
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Realm> loader) {
-        adapter.update(null);
-        adapter.notifyDataSetChanged();
-    }*/
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
