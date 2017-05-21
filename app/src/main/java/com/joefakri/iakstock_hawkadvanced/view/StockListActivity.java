@@ -8,6 +8,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -79,7 +81,9 @@ public class StockListActivity extends AppCompatActivity implements LoaderManage
             stackServiceIntent.putExtra(IntentService.EXTRA_TAG, IntentService.ACTION_INIT);
             if (isNetworkAvailable()) {
                 startService(stackServiceIntent);
+                Log.e("net","connect");
             } else {
+                Log.e("net","no connection");
                 Snackbar.make(clBaseView, getString(R.string.msg_no_internet_connection),
                         Snackbar.LENGTH_LONG).show();
             }
@@ -186,9 +190,12 @@ public class StockListActivity extends AppCompatActivity implements LoaderManage
         {
             view_no_connection.setVisibility(View.GONE);
             view_no_stocks.setVisibility(View.GONE);
+            rvStockList.setVisibility(View.VISIBLE);
         }
 
         if (!isNetworkAvailable()) {
+            rvStockList.setVisibility(View.GONE);
+            view_no_connection.setVisibility(View.VISIBLE);
             Snackbar.make(clBaseView, getString(R.string.msg_offline),
                     Snackbar.LENGTH_INDEFINITE).setAction(R.string.msg_try_again, new View.OnClickListener() {
                 @Override
@@ -296,6 +303,18 @@ public class StockListActivity extends AppCompatActivity implements LoaderManage
         return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
     }
+
+    public void turnOn(){
+        WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        wifi.setWifiEnabled(true);
+    }
+
+    public void turnOff(){
+        Log.e("off", "turn");
+        WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        wifi.setWifiEnabled(false);
+    }
+
 
 
 }

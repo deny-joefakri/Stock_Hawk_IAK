@@ -26,9 +26,7 @@
 
     <string name="stock_detail_title">Stock</string>
     <string name="stock_detail_tab_header">NASDAQ: %1$s</string>
-    <string name="stock_detail_tab1">5DAYS</string>
-    <string name="stock_detail_tab2">2WEEKS</string>
-    <string name="stock_detail_tab3">1MONTH</string>
+    <string name="stock_detail_tab1">Sample</string>
 
     <string name="lang_eng">English</string>
     <string name="lang_egypt">Egypt</string>

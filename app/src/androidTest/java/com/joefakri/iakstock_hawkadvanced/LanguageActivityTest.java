@@ -7,7 +7,6 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 
-import com.joefakri.iakstock_hawkadvanced.R;
 import com.joefakri.iakstock_hawkadvanced.view.StockListActivity;
 
 import org.junit.Rule;
@@ -23,7 +22,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
-@LargeTest
 @RunWith(AndroidJUnit4.class)
 public class LanguageActivityTest {
 

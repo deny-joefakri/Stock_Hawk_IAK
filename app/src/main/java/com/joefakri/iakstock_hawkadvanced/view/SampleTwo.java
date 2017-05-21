@@ -6,5 +6,5 @@ import android.support.v4.app.Fragment;
  * Created by deny on bandung.
  */
 
-public class WeekFragment extends Fragment {
+public class SampleTwo extends Fragment {
 }

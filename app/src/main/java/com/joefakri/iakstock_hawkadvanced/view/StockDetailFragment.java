@@ -1,7 +1,6 @@
 package com.joefakri.iakstock_hawkadvanced.view;
 
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -9,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
@@ -116,11 +114,7 @@ public class StockDetailFragment extends Fragment implements LoaderManager.Loade
         } else if (id == CURSOR_LOADER_ID_FOR_LINE_CHART) {
 
             String sortOrder = QuoteColumns._ID + " ASC LIMIT 5";
-            if (mSelectedTab.equals(getString(R.string.stock_detail_tab2))) {
-                sortOrder = QuoteColumns._ID + " ASC LIMIT 14";
-            } else if (mSelectedTab.equals(getString(R.string.stock_detail_tab3))) {
-                sortOrder = QuoteColumns._ID + " ASC";
-            }
+
 
             return new CursorLoader(getContext(), QuoteProvider.QuotesHistoricData.CONTENT_URI,
                     new String[]{QuoteHistoricalDataColumns._ID, QuoteHistoricalDataColumns.SYMBOL,
@@ -184,9 +178,8 @@ public class StockDetailFragment extends Fragment implements LoaderManager.Loade
 
     private void setupViewPager() {
         adapter = new ViewPagerAdapter(getChildFragmentManager());
-        adapter.addFrag(new DaysFragment(), getString(R.string.stock_detail_tab1));
-        adapter.addFrag(new WeekFragment(), getString(R.string.stock_detail_tab2));
-        adapter.addFrag(new MonthFragment(), getString(R.string.stock_detail_tab3));
+        adapter.addFrag(new SampleOne(), getString(R.string.stock_detail_tab1));
+        adapter.addFrag(new SampleTwo(), getString(R.string.stock_detail_tab1));
         vpServices.setAdapter(adapter);
         vpServices.setOffscreenPageLimit(0);
     }
