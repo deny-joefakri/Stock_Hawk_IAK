@@ -152,7 +152,6 @@ public class StockDetailFragment extends Fragment implements LoaderManager.Loade
 
         } else if (loader.getId() == CURSOR_LOADER_ID_FOR_LINE_CHART && data != null &&
                 data.moveToFirst()) {
-            //updateChart(data);
         }
     }
 

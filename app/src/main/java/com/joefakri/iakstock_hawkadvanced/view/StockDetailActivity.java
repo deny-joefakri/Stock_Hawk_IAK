@@ -3,6 +3,7 @@ package com.joefakri.iakstock_hawkadvanced.view;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.joefakri.iakstock_hawkadvanced.R;
@@ -25,6 +26,7 @@ public class StockDetailActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
+            Log.e("getintent", getIntent().getStringExtra(StockDetailFragment.ARG_SYMBOL));
             arguments.putString(StockDetailFragment.ARG_SYMBOL, getIntent().getStringExtra(StockDetailFragment.ARG_SYMBOL));
             StockDetailFragment fragment = new StockDetailFragment();
             fragment.setArguments(arguments);
